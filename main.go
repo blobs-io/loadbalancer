@@ -9,11 +9,18 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/gorilla/websocket"
 	"github.com/y21/loadbalancer/structures"
+	"github.com/y21/loadbalancer/ws"
 )
 
 var config structures.Config
 var nodes []structures.Node = make([]structures.Node, 16)
+var wsUpgrader = websocket.Upgrader{
+	EnableCompression: true,
+	WriteBufferSize:   1024,
+	ReadBufferSize:    1024,
+}
 
 func main() {
 	file, err := ioutil.ReadFile("./configs/config.json")
@@ -37,6 +44,30 @@ func main() {
 			body.WriteString(node.ToString() + "\n")
 		}
 		fmt.Fprintf(w, body.String())
+	})
+
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		connection, err := wsUpgrader.Upgrade(w, r, nil)
+		if err != nil {
+			fmt.Printf("ws connection error: %v\n", err)
+			return
+		}
+
+		connection.WriteJSON(ws.WSMessage{
+			Op: ws.OpcodeHello,
+			Data: ws.WSHelloMessage{
+				Interval: config.PingInterval,
+			},
+		})
+
+		for {
+			var msg ws.WSMessage
+			err := connection.ReadJSON(&msg)
+			if err != nil {
+				return
+			}
+
+		}
 	})
 
 	fmt.Printf("Webserver running on port %d\n", config.Port)
