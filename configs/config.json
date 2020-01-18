@@ -1,4 +1,9 @@
 {
     "port": 3002,
-    "pingInterval": 5000
+    "pingInterval": 5000,
+    "weights": {
+        "ping": 0.3,
+        "cpu": 0.2,
+        "mem": 0.5
+    }
 }
