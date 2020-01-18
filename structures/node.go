@@ -9,20 +9,23 @@ import (
 
 // Node represents an edge that hosts an instance of an application
 type Node struct {
-	Host           string `json:"host"`
-	Ping           uint8  `json:"ping"`
-	CPU            uint8  `json:"cpu"`
-	Available      bool   `json:"available"`
-	LastStatusCode int    `json:"lastStatusCode"`
-	AccessToken    string `json:"accessToken"`
-	Mem            uint8  `json:"mem"`
+	Host           string  `json:"host"`
+	Ping           uint8   `json:"ping"`
+	CPU            uint8   `json:"cpu"`
+	Available      bool    `json:"available"`
+	LastStatusCode int     `json:"lastStatusCode"`
+	AccessToken    string  `json:"accessToken"`
+	Mem            uint8   `json:"mem"`
+	LastScore      float32 `json:"lastScore"`
 }
 
 // GetScore returns the score for a node (lower = better)
 func (n *Node) GetScore(config Config) float32 {
-	return ((float32)(n.CPU) * config.Weights.CPU) +
+	score := ((float32)(n.CPU) * config.Weights.CPU) +
 		((float32)(n.Mem) * config.Weights.Mem) +
 		((float32)(n.Ping) * config.Weights.Ping)
+	n.LastScore = score
+	return score
 }
 
 // PingNode pings the node and updates stats
@@ -66,6 +69,14 @@ func PingAllNodes(n *[]Node) {
 }
 
 // GetOptimalNode gets a node that has the lowest score
-func GetOptimalNode(n *[]Node) Node {
-	return (*n)[0]
+func GetOptimalNode(n *[]Node, config Config) Node {
+	var node Node
+
+	for i := range *n {
+		if i == 0 || node.LastScore > (*n)[i].GetScore(config) {
+			node = (*n)[i]
+		}
+	}
+
+	return node
 }
