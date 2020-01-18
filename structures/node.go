@@ -14,6 +14,7 @@ type Node struct {
 	CPU            uint8  `json:"cpu"`
 	Available      bool   `json:"available"`
 	LastStatusCode int    `json:"lastStatusCode"`
+	AccessToken    string `json:"accessToken"`
 	Mem            uint8  `json:"mem"`
 }
 
