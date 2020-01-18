@@ -18,6 +18,13 @@ type Node struct {
 	Mem            uint8  `json:"mem"`
 }
 
+// GetScore returns the score for a node (lower = better)
+func (n *Node) GetScore(config Config) float32 {
+	return ((float32)(n.CPU) * config.Weights.CPU) +
+		((float32)(n.Mem) * config.Weights.Mem) +
+		((float32)(n.Ping) * config.Weights.Ping)
+}
+
 // PingNode pings the node and updates stats
 func (n *Node) PingNode() {
 	timestampBefore := time.Now().UnixNano()
@@ -35,7 +42,7 @@ func (n *Node) PingNode() {
 }
 
 // ToString returns a string representing the node
-func (n *Node) ToString() string {
+func (n *Node) ToString(config Config) string {
 	var result bytes.Buffer
 	var available string
 	if n.Available == true {
@@ -43,7 +50,7 @@ func (n *Node) ToString() string {
 	} else {
 		available = "no"
 	}
-	result.WriteString(fmt.Sprintf("[%s] Ping: %dms, CPU: %d, RAM: %d, Available: %s", n.Host, n.Ping, n.CPU, n.Mem, available))
+	result.WriteString(fmt.Sprintf("[%s] Ping: %dms, CPU: %d, RAM: %d, Score: %f, Available: %s", n.Host, n.Ping, n.CPU, n.Mem, n.GetScore(config), available))
 	return result.String()
 }
 
