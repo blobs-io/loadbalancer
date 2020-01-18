@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/y21/loadbalancer/structures"
 	"github.com/y21/loadbalancer/ws"
@@ -38,15 +39,23 @@ func main() {
 
 	go structures.PingAllNodes(&nodes)
 
-	http.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
+	router := mux.NewRouter()
+
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		node := structures.GetOptimalNode(&nodes)
+		http.Redirect(w, r, node.Host, 302)
+	})
+
+	router.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
 		var body bytes.Buffer
+		body.WriteString("Total Sockets: " + strconv.Itoa(len(nodes)) + "\n-------------\n")
 		for _, node := range nodes {
 			body.WriteString(node.ToString() + "\n")
 		}
 		fmt.Fprintf(w, body.String())
 	})
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		connection, err := wsUpgrader.Upgrade(w, r, nil)
 		if err != nil {
 			fmt.Printf("ws connection error: %v\n", err)
@@ -82,5 +91,5 @@ func main() {
 	})
 
 	fmt.Printf("Webserver running on port %d\n", config.Port)
-	http.ListenAndServe(":"+strconv.Itoa((int)(config.Port)), nil)
+	http.ListenAndServe(":"+strconv.Itoa((int)(config.Port)), router)
 }
