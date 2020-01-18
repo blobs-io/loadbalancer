@@ -1,10 +1,12 @@
-package structures
+package node
 
 import (
 	"bytes"
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/y21/loadbalancer/structures"
 )
 
 // Node represents an edge that hosts an instance of an application
@@ -20,7 +22,7 @@ type Node struct {
 }
 
 // GetScore returns the score for a node (lower = better)
-func (n *Node) GetScore(config Config) float32 {
+func (n *Node) GetScore(config structures.Config) float32 {
 	score := ((float32)(n.CPU) * config.Weights.CPU) +
 		((float32)(n.Mem) * config.Weights.Mem) +
 		((float32)(n.Ping) * config.Weights.Ping)
@@ -45,7 +47,7 @@ func (n *Node) PingNode() {
 }
 
 // ToString returns a string representing the node
-func (n *Node) ToString(config Config) string {
+func (n *Node) ToString(config structures.Config) string {
 	var result bytes.Buffer
 	var available string
 	if n.Available == true {
@@ -69,7 +71,7 @@ func PingAllNodes(n *[]Node) {
 }
 
 // GetOptimalNode gets a node that has the lowest score
-func GetOptimalNode(n *[]Node, config Config) Node {
+func GetOptimalNode(n *[]Node, config structures.Config) Node {
 	var node Node
 
 	for i := range *n {
