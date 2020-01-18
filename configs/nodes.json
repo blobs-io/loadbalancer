@@ -1,5 +1,6 @@
 [
     {
-        "host": "https://blobs-game.com"
+        "host": "https://blobs-game.com",
+        "accessToken": ""
     }
 ]
