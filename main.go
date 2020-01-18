@@ -42,7 +42,7 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		node := structures.GetOptimalNode(&nodes)
+		node := structures.GetOptimalNode(&nodes, config)
 		http.Redirect(w, r, node.Host, 302)
 	})
 
