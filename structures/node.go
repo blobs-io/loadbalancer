@@ -57,3 +57,8 @@ func PingAllNodes(n *[]Node) {
 		time.Sleep(time.Second * 5)
 	}
 }
+
+// GetOptimalNode gets a node that has the lowest score
+func GetOptimalNode(n *[]Node) {
+
+}
