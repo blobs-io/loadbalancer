@@ -59,6 +59,6 @@ func PingAllNodes(n *[]Node) {
 }
 
 // GetOptimalNode gets a node that has the lowest score
-func GetOptimalNode(n *[]Node) {
-
+func GetOptimalNode(n *[]Node) Node {
+	return (*n)[0]
 }
