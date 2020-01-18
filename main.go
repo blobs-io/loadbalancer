@@ -48,9 +48,9 @@ func main() {
 
 	router.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
 		var body bytes.Buffer
-		body.WriteString("Total Sockets: " + strconv.Itoa(len(nodes)) + "\n-------------\n")
+		body.WriteString("Total Nodes: " + strconv.Itoa(len(nodes)) + "\n-------------\n")
 		for _, node := range nodes {
-			body.WriteString(node.ToString() + "\n")
+			body.WriteString(node.ToString(config) + "\n")
 		}
 		fmt.Fprintf(w, body.String())
 	})
