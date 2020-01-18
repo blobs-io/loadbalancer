@@ -53,20 +53,31 @@ func main() {
 			return
 		}
 
-		connection.WriteJSON(ws.WSMessage{
-			Op: ws.OpcodeHello,
-			Data: ws.WSHelloMessage{
-				Interval: config.PingInterval,
-			},
+		connection.WriteJSON(ws.Message{
+			Op:   ws.OpcodeHello,
+			Data: strconv.Itoa((int)(config.PingInterval)),
 		})
 
 		for {
-			var msg ws.WSMessage
+			var msg ws.Message
 			err := connection.ReadJSON(&msg)
 			if err != nil {
-				return
+				fmt.Printf("ws message error: %v\n", err)
+				break
 			}
 
+			if msg.Type == "stats" {
+				var data ws.UpdateData
+				json.Unmarshal([]byte(msg.Data), &data)
+				for i := range nodes {
+					node := &(nodes[i])
+					if node.AccessToken == data.AccessToken {
+						node.CPU = data.CPU
+						node.Mem = data.Mem
+						node.Available = true
+					}
+				}
+			}
 		}
 	})
 
