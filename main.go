@@ -11,12 +11,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/y21/loadbalancer/node"
 	"github.com/y21/loadbalancer/structures"
 	"github.com/y21/loadbalancer/ws"
 )
 
 var config structures.Config
-var nodes []structures.Node = make([]structures.Node, 16)
+var nodes []node.Node = make([]node.Node, 16)
 var wsUpgrader = websocket.Upgrader{
 	EnableCompression: true,
 	WriteBufferSize:   1024,
@@ -37,12 +38,12 @@ func main() {
 	}
 	json.Unmarshal(file, &nodes)
 
-	go structures.PingAllNodes(&nodes)
+	go node.PingAllNodes(&nodes)
 
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		node := structures.GetOptimalNode(&nodes, config)
+		node := node.GetOptimalNode(&nodes, config)
 		http.Redirect(w, r, node.Host, 302)
 	})
 
