@@ -118,9 +118,13 @@
 				const nodes = [];
 				const endpoint = "/api/stats";
 
-				setInterval(() => {
+				function updateNodes() {
 
-				});
+				}
+				updateNodes();
+
+
+				setInterval(updateNodes, 2500);
 			})();
 		</script>
 </html>
