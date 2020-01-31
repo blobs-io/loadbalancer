@@ -134,8 +134,10 @@
 								if (!nodes.some(v => v.host === node.host)) {
 									const newNode = new Node({
 										...node,
-										status: node.available ? Status.Offline : (node.ping > 300 ? Status.Unhealthy : Status.Online)
+										status: !node.available ? Status.Offline : (node.ping > 300 ? Status.Unhealthy : Status.Online)
 									});
+
+									nodes.push(newNode);
 								}
 							}
 						})
