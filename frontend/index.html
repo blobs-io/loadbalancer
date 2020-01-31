@@ -110,9 +110,16 @@
 		<script>
 			void (async () => {
 				if (!window.fetch) return alert("fetch not supported in your browser. Stop using old browsers.");
+				const Status = {
+					Offline: 0,
+					Unhealthy: 1,
+					Online: 2
+				};
 				class Node {
 					constructor(data) {
-						this.name = data.name;
+						this.host = data.host;
+						this.available = data.available;
+						this.status = data.status;
 					}
 				}
 
@@ -120,7 +127,12 @@
 				const endpoint = "/api/stats";
 
 				function updateNodes() {
-
+					window.fetch(document.location.origin + endpoint)
+						.then(v => v.json())
+						.then(n => {
+							for (const node of nodes) {
+							}
+						});
 				}
 				updateNodes();
 
