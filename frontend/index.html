@@ -1,0 +1,126 @@
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>loadbalancer</title>
+	<style>
+		:root {
+			--unhealthy-color: #f39c12;
+			--offline-color: #c0392b;
+			--operational-color: #2ecc71;
+		}
+
+		body {
+			background-color: #2C2F33;
+			font-family: "Consolas";
+			color: white;
+			font-size: 11px;
+		}
+
+		.header-right {
+			display: inline-block;
+			float: right;
+			color: white;
+			text-decoration: none;
+		}
+
+		#colors {
+			margin-top: 15px;
+		}
+
+		.small-box {
+			display: inline-block;
+			width: 10px;
+			height: 10px;
+		}
+
+		.unhealthy {
+			background-color: var(--unhealthy-color);
+		}
+
+		.offline {
+			background-color: var(--offline-color);
+		}
+
+		.operational {
+			background-color: var(--operational-color);
+		}
+
+		#wrapper {
+			display: inline-block;
+			margin-top: 15px;
+			padding: 15px;
+		}
+
+		.cluster {
+			display: inline-block;
+			margin-left: 15px;
+			margin-top: 5px;
+			border: 1px solid white;
+			padding: 15px;
+		}
+
+		.cluster-id {
+			font-size: 14px;
+			display: block;
+		}
+
+		.node {
+			display: inline-block;
+			padding: 5px;
+			text-align: center;
+			margin-top: 15px;
+			height: 40px;
+			width: 40px;
+			font-size: 13px;
+			background-color: var(--operational-color);
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<span id="status-text">loadbalancing (status: <span id="status">connecting</span>)</span>
+		<a class="header-right" href="https://github.com/blobs-io/loadbalancer">source</a>
+	</header>
+	<div id="colors">
+		colors:
+		<div class="small-box unhealthy"></div> Unhealthy
+		<div class="small-box offline"></div> Offline
+		<div class="small-box operational"></div> Operational
+	</div>
+	<div id="wrapper">
+		<div class="cluster">
+			<span class="cluster-id" align="center">Cluster #0</span>
+			<div class="node">node0</div>
+			<div class="node">node1</div>
+			<div class="node">node2</div>
+			<div class="node">node3</div>
+			<div class="node">node4</div>
+			<div class="node">node5</div>
+			<div class="node">node6</div>
+			<div class="node">node7</div>
+		</div>
+		<div class="cluster">
+			<span class="cluster-id" align="center">Cluster #dev</span>
+			<div class="node">node0</div>
+		</div>
+	</div>
+
+	<body>
+		<script>
+			void (async () => {
+				class Node {
+					constructor(data) {
+						this.name = data.name;
+					}
+				}
+
+				const nodes = [];
+				const endpoint = "/api/stats";
+
+				setInterval(() => {
+
+				});
+			})();
+		</script>
+</html>
