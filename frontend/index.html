@@ -109,6 +109,7 @@
 	<body>
 		<script>
 			void (async () => {
+				if (!window.fetch) return alert("fetch not supported in your browser. Stop using old browsers.");
 				class Node {
 					constructor(data) {
 						this.name = data.name;
