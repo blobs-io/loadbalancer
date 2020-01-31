@@ -1,10 +1,8 @@
 package webserver
 
 import (
-	"bytes"
-	"fmt"
+	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/y21/loadbalancer/node"
 	"github.com/y21/loadbalancer/structures"
@@ -19,12 +17,13 @@ func Run(router *mux.Router, config *structures.Config, nodes *[]node.Node) {
 		http.Redirect(w, r, node.Host, 302)
 	})
 
-	router.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
-		var body bytes.Buffer
-		body.WriteString("Total Nodes: " + strconv.Itoa(len(*nodes)) + "\n-------------\n")
+	router.HandleFunc("/api/stats", func(w http.ResponseWriter, r *http.Request) {
+		body := make([]node.Node, 0)
 		for _, node := range *nodes {
-			body.WriteString(node.ToString(*config) + "\n")
+			node.AccessToken = "" // don't expose access token
+			body = append(body, node)
 		}
-		fmt.Fprintf(w, body.String())
+
+		json.NewEncoder(w).Encode(body)
 	})
 }
