@@ -2,6 +2,8 @@ package webserver
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/y21/loadbalancer/node"
@@ -25,5 +27,15 @@ func Run(router *mux.Router, config *structures.Config, nodes *[]node.Node) {
 		}
 
 		json.NewEncoder(w).Encode(body)
+	})
+
+	router.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
+		body, err := ioutil.ReadFile("frontend/index.html")
+		if err != nil {
+			fmt.Println(err)
+			w.Write([]byte("could not read file"))
+			return
+		}
+		w.Write(body)
 	})
 }
