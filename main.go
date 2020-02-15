@@ -29,5 +29,11 @@ func main() {
 	webserver.Run(router, &config, &nodes)
 	ws.Handle(router, &config, &nodes)
 
-	http.ListenAndServe(":"+strconv.Itoa((int)(config.Port)), router)
+	// Ping nodes
+	go node.PingAllNodes(&nodes)
+
+	err := http.ListenAndServe(":"+strconv.Itoa((int)(config.Port)), router)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
