@@ -11,7 +11,7 @@
 
 		body {
 			background-color: #2C2F33;
-			font-family: "Consolas";
+			font-family: "Consolas", Arial, serif;
 			color: white;
 			font-size: 11px;
 		}
@@ -72,7 +72,6 @@
 			height: 40px;
 			width: 40px;
 			font-size: 13px;
-			background-color: var(--operational-color);
 		}
 	</style>
 </head>
@@ -89,20 +88,8 @@
 		<div class="small-box operational"></div> Operational
 	</div>
 	<div id="wrapper">
-		<div class="cluster">
+		<div class="cluster" id="cluster0">
 			<span class="cluster-id" align="center">Cluster #0</span>
-			<div class="node">node0</div>
-			<div class="node">node1</div>
-			<div class="node">node2</div>
-			<div class="node">node3</div>
-			<div class="node">node4</div>
-			<div class="node">node5</div>
-			<div class="node">node6</div>
-			<div class="node">node7</div>
-		</div>
-		<div class="cluster">
-			<span class="cluster-id" align="center">Cluster #dev</span>
-			<div class="node">node0</div>
 		</div>
 	</div>
 
@@ -115,11 +102,41 @@
 					Unhealthy: 1,
 					Online: 2
 				};
+
+				function statusToString(status) {
+					if (status === Status.Offline) {
+						return "offline";
+					} else if (status === Status.Online) {
+						return "operational";
+					} else {
+						return "unhealthy";
+					}
+				}
+
 				class Node {
 					constructor(data) {
+						this.id = data.id;
 						this.host = data.host;
 						this.available = data.available;
 						this.status = data.status;
+					}
+
+					show() {
+						const cluster = document.getElementById("cluster0");
+						const element = document.createElement("div");
+						element.id = element.innerText = `node${this.id}`;
+						element.className = `node ${statusToString(this.status)}`;//"node " + statusToString(this.status);
+
+						cluster.appendChild(element);
+					}
+
+					update() {
+						const element = document.getElementById(`node${this.id}`);
+						element.className = `node ${statusToString(this.status)}`;
+					}
+
+					static getStatus(node) {
+						return !node.available ? Status.Offline : (node.ping > 300 ? Status.Unhealthy : Status.Online);
 					}
 				}
 
@@ -130,22 +147,28 @@
 					window.fetch(document.location.origin + endpoint)
 						.then(v => v.json())
 						.then(n => {
-							for (const node of nodes) {
-								if (!nodes.some(v => v.host === node.host)) {
+							for (const node of n) {
+								const existingNode = nodes.find(v => v.host === node.host);
+								if (!existingNode) {
 									const newNode = new Node({
 										...node,
-										status: !node.available ? Status.Offline : (node.ping > 300 ? Status.Unhealthy : Status.Online)
+										id: nodes.length,
+										status: Node.getStatus(node)
 									});
 
+									newNode.show();
+
 									nodes.push(newNode);
+									console.log(nodes);
+								} else {
+									existingNode.status = Node.getStatus(node);
+									existingNode.update();
 								}
 							}
 						})
 						.catch(console.error);
 				}
 				updateNodes();
-
-
 				setInterval(updateNodes, 2500);
 			})();
 		</script>
